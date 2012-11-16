@@ -1,0 +1,97 @@
+object Form1: TForm1
+  Left = 442
+  Height = 455
+  Top = 311
+  Width = 706
+  Caption = 'RSS Demo'
+  ClientHeight = 435
+  ClientWidth = 706
+  Menu = MainMenu1
+  OnCreate = FormCreate
+  LCLVersion = '0.9.30.4'
+  object GroupBox1: TGroupBox
+    Left = 0
+    Height = 432
+    Top = 0
+    Width = 185
+    Caption = 'Channels:'
+    ClientHeight = 414
+    ClientWidth = 181
+    TabOrder = 0
+    object TreeView1: TTreeView
+      Left = 6
+      Height = 376
+      Top = 0
+      Width = 169
+      DefaultItemHeight = 17
+      ReadOnly = True
+      TabOrder = 0
+      OnClick = TreeView1Click
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    end
+    object Button1: TButton
+      Left = 6
+      Height = 25
+      Top = 384
+      Width = 75
+      Caption = 'Add'
+      OnClick = Button1Click
+      TabOrder = 1
+    end
+    object Button2: TButton
+      Left = 94
+      Height = 25
+      Top = 384
+      Width = 75
+      Caption = 'Remove'
+      OnClick = Button2Click
+      TabOrder = 2
+    end
+  end
+  object GroupBox2: TGroupBox
+    Left = 184
+    Height = 432
+    Top = 0
+    Width = 521
+    Caption = 'News:'
+    ClientHeight = 414
+    ClientWidth = 517
+    TabOrder = 1
+    object ListView1: TListView
+      Left = 0
+      Height = 414
+      Top = 0
+      Width = 517
+      Align = alClient
+      Columns = <      
+        item
+          Caption = 'title'
+          Width = 100
+        end      
+        item
+          Caption = 'url'
+          Width = 100
+        end      
+        item
+          Caption = 'description'
+          Width = 250
+        end      
+        item
+          Caption = 'pubdate'
+        end>
+      ReadOnly = True
+      TabOrder = 0
+      ViewStyle = vsReport
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 46
+    top = 23
+    object MenuItem1: TMenuItem
+      Caption = 'File'
+      object MenuItem2: TMenuItem
+        Caption = 'Exit'
+      end
+    end
+  end
+end
