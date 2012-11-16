@@ -81,14 +81,11 @@ end;
 procedure TRSSParser.ParseRSSChannel(const RSSData: TStream);
       procedure DoLoadItems(aParentNode: TDOMNode; aRSSChannel: TRSSChannel);
            var
-             I,j: Integer;
              oRSSItem: TRSSItem;
              oNode: TDOMNode;
              RSSItems: TDOMNodeList;
-             s: string;
            begin
               RssItems:=aParentNode.GetChildNodes;
-              j:=RSSItems.Count;
               for i:=0 to RSSItems.Count-1 do
                begin
                oNode:=RssItems[i];
