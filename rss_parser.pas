@@ -5,7 +5,7 @@ unit rss_parser;
 interface
 
 uses
-  Classes, SysUtils,Variants, DateUtils, XMLRead,XMLWrite,Dom, rss_types;
+  Classes, SysUtils,Variants, DateUtils, XMLRead,XMLWrite,Dom, rss_types,rss_utils;
 
 type
 
@@ -16,8 +16,9 @@ type
     function FetchNextToken(var s: string; space: string = ' '): string;
     function MonthToInt(MonthStr: string): Integer;
     function ParseRSSDate(DateStr: string): TDateTime;
+    function GetNodeValue(aNode:TDOMNode;aTag: string):string;
   public
-    procedure ParseRSSChannel(const RSSData: TStream);
+    procedure ParseRSSChannel(const RSSData: string);
     end;
 
 implementation
@@ -78,12 +79,28 @@ begin
   end;
 end;
 
-procedure TRSSParser.ParseRSSChannel(const RSSData: TStream);
+function TRSSParser.GetNodeValue(aNode: TDOMNode; aTag: string): string;
+  var
+  oNode: TDOMNode;
+begin
+  Result := '';
+  if Assigned(ANode) then
+  begin
+    oNode := ANode.FindNode(DOMString(ATag));
+    if Assigned(oNode) then
+    begin
+        Result := Convert(oNode.TextContent);
+    end;
+  end;
+end;
+
+procedure TRSSParser.ParseRSSChannel(const RSSData: string);
       procedure DoLoadItems(aParentNode: TDOMNode; aRSSChannel: TRSSChannel);
            var
              oRSSItem: TRSSItem;
              oNode: TDOMNode;
              RSSItems: TDOMNodeList;
+             i: integer;
            begin
               RssItems:=aParentNode.GetChildNodes;
               for i:=0 to RSSItems.Count-1 do
@@ -92,32 +109,49 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: TStream);
                if CompareStr(oNode.NodeName,'item') = 0 then
                begin
                oRSSItem:=aRSSChannel.RSSList.AddItem;
-               oRSSItem.Title:= VarToStr(oNode.FindNode('title').FirstChild.NodeValue);
-               oRSSItem.Link  := VarToStr(oNode.findnode('link').FirstChild.NodeValue);
-               oRSSItem.Description   := VarToStr(oNode.findnode('description').FirstChild.NodeValue);
-               oRSSItem.PubDate   := ParseRSSDate(VarToStr(oNode.findnode('pubDate').FirstChild.NodeValue));
+               oRSSItem.Title := GetNodeValue(oNode,'title');
+               oRSSItem.Link  := GetNodeValue(oNode,'link');
+               oRSSItem.Description   := GetNodeValue(oNode,'description');
+               oRSSItem.PubDate   := DateToStr(ParseRssDate(GetNodeValue(oNode,'pubDate')));
+               oRSSItem.Author := GetNodeValue(oNode,'author');
+               oRSSItem.Category := GetNodeValue(oNode,'category');
+               oRssItem.Guid := GetNodeValue(oNode,'guid');
+               oRSSItem.Comments:= GetNodeValue(oNode,'comments');
                end;
             end;
            end;
 
            procedure DoLoadChannels(aNode: TDOMNode);
            var
-             I: Integer;
              oNode: TDOMNode;
              oRSSChannel: TRSSChannel;
            begin
                oRSSChannel:=AddItem;
                oNode:=aNode;
-               oRSSChannel.Title:= oNode.FindNode('title').FirstChild.NodeValue;
-               oRSSChannel.Link:= oNode.FindNode('link').FirstChild.NodeValue;
-               oRSSChannel.Description:=oNode.FindNode('description').FirstChild.NodeValue;
+               oRSSChannel.Title:=GetNodeValue(oNode,'title');
+                oRSSChannel.Link:=GetNodeValue(oNode,'link');
+               oRSSChannel.Description:=GetNodeValue(oNode,'description');
+               oRSSChannel.Category:=GetNodeValue(oNode,'category');
+               oRSSChannel.Copyright:=GetNodeValue(oNode,'copyright');
+               oRSSChannel.LastBuildDate:=GetNodeValue(oNode,'lastBuildDate');
+               oRSSChannel.Language:=GetNodeValue(oNode,'language'); ;
                DoLoadItems(oNode, oRSSChannel);
            end;
          var
            oXmlDocument: TXmlDocument;
+            RSS: TStringStream;
+             s,RssStr: string;
          begin
            oXMLDocument:=TXMLDocument.Create;
-           ReadXMLFile(oXmlDocument,RSSData);
+           RssStr:=RSSData;
+           if not (pos(RssStr, '"windows-1251"')=0) then
+             begin
+               s:=ReplaceStr(RssStr,'windows-1251','UTF-8');
+               RssStr:=AnsiToUtf8(s);
+             end;
+           RSS:=TStringStream.Create(RssStr);
+           RSS.Position:=0;
+           ReadXMLFile(oXmlDocument,RSS);
            DoLoadChannels (oXmlDocument.DocumentElement.FindNode('channel'));
            FreeAndNil(oXmlDocument);
          end;

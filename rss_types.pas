@@ -13,11 +13,15 @@ type
 
  TRSSItem = class(TCollectionItem)
   public
-    PubDate: TDate;
+    PubDate: string;
     Link: string;
     Title: string;
     Description: string;
     Category: string;
+    Guid: string;
+    IsPermaLink: Boolean;
+    Comments: string;
+    Author: string;
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
     end;
@@ -41,6 +45,12 @@ type
     Description: string;
     Title: string;
     Link: string;
+    Category: string;
+    Copyright: string;
+    Docs: string;
+    Language: string;
+    LastBuildDate: string;
+    Webmaster: string;
     RSSList: TRSSItemList;
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;

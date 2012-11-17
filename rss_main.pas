@@ -53,17 +53,11 @@ end;
 procedure TForm1.Button1Click(Sender: TObject);
 var
   url: string;
-  aRss: TStringStream;
-  s,ss: string;
+  s:string;
 begin
  if InputQuery('Load RSS:', 'Insert RSS Feed address', url)
   then s:=GetFile(url) else exit;
-//   ss:=ReplaceStr(s,'windows-1251','UTF-8');
-  s:=convert(s);
-  // m.SaveToFile('1.txt');
-  aRss:=TStringStream.Create(s);
-  aRss.Position:=0;
-  RSS.ParseRSSChannel(aRss);
+  RSS.ParseRSSChannel(s);
   LoadToTreeView();
 end;
 
@@ -100,7 +94,7 @@ begin
     oListItem.Caption:=aChannel.RSSList[i].Title;
     oListItem.SubItems.Add(aChannel.RSSList[i].Link);
     oListItem.SubItems.Add(aChannel.RSSList[i].Description);
-    oListItem.SubItems.Add(DateToStr(aChannel.RSSList[i].PubDate));
+    oListItem.SubItems.Add(aChannel.RSSList[i].PubDate);
   end;
 end;
 
