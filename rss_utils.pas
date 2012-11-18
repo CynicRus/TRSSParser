@@ -14,6 +14,8 @@ function ReplaceStr(const S, Srch, Replace: string): string;
 
 function convert(s:string): string;
 
+function GetFeedFileName(s: string): string;
+
 implementation
 
 function Eq(aValue1, aValue2: string): boolean;
@@ -129,6 +131,26 @@ for i:=1 to length(s) do
   end;
 end;
 convert:=s1;
+end;
+
+function GetFeedFileName(s: string): string;
+var
+  c: char;
+  i, k: Integer;
+begin
+  k := 0;
+  SetLength(Result, Length(s));
+  for i := 0 to Length(s) - 1 do
+  begin
+    c := s[i + 1];
+    if c in [ 'a'..'z', 'A'..'Z' ] then
+    begin
+      Inc(k);
+      Result[k] := c;
+    end;
+  end;
+  SetLength(Result, k);
+  result:=lowercase(result+'.rss');
 end;
 
 end.

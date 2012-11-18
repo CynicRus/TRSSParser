@@ -5,7 +5,7 @@ unit rss_parser;
 interface
 
 uses
-  Classes, SysUtils,Variants, DateUtils, XMLRead,XMLWrite,Dom, rss_types,rss_utils;
+  Classes, SysUtils,Variants, DateUtils,HTTPDefs, XMLRead,XMLWrite,Dom, rss_types,rss_utils;
 
 type
 
@@ -17,8 +17,10 @@ type
     function MonthToInt(MonthStr: string): Integer;
     function ParseRSSDate(DateStr: string): TDateTime;
     function GetNodeValue(aNode:TDOMNode;aTag: string):string;
+    function DateTimeToGMT(const ADateTime: TDateTime): string;
   public
     procedure ParseRSSChannel(const RSSData: string);
+    procedure SaveRSSChannels(const aPath: string);
     end;
 
 implementation
@@ -94,6 +96,17 @@ begin
   end;
 end;
 
+function TRSSParser.DateTimeToGMT(const ADateTime: TDateTime): string;
+var
+  VYear, VMonth, VDay, VHour, VMinute, VSecond, M: Word;
+begin
+  DecodeDate(ADateTime, VYear, VMonth, VDay);
+  DecodeTime(ADateTime, VHour, VMinute, VSecond, M);
+  Result := Format('%s, %.2d %s %d %.2d:%.2d:%.2d GMT',
+    [HTTPDays[DayOfWeek(ADateTime)], VDay, HTTPMonths[VMonth], VYear, VHour,
+    VMinute, VSecond]);
+end;
+
 procedure TRSSParser.ParseRSSChannel(const RSSData: string);
       procedure DoLoadItems(aParentNode: TDOMNode; aRSSChannel: TRSSChannel);
            var
@@ -144,7 +157,7 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
          begin
            oXMLDocument:=TXMLDocument.Create;
            RssStr:=RSSData;
-           if not (pos(RssStr, '"windows-1251"')=0) then
+           if not (pos('windows-1251',RssStr )=0) then
              begin
                s:=ReplaceStr(RssStr,'windows-1251','UTF-8');
                RssStr:=AnsiToUtf8(s);
@@ -155,6 +168,26 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
            DoLoadChannels (oXmlDocument.DocumentElement.FindNode('channel'));
            FreeAndNil(oXmlDocument);
          end;
+
+procedure TRSSParser.SaveRSSChannels(const aPath: string);
+  procedure SaveChannel(Channel: TRSSChannel;aFilePath: string);
+   var
+     oXmlDocument: TXmlDocument;
+      i: integer;
+      vRoot,vFeed,vItem: TDomNode;
+    begin
+      oXmlDocument:=TXMLDocument.Create;
+      vRoot:=oXmlDocument.CreateElement('rss');
+      TDOMElement(vRoot).SetAttribute('version', '2.0');
+      vFeed:=oXmlDocument.CreateElement('channel');
+
+
+
+      end;
+
+begin
+
+end;
 
 
 
