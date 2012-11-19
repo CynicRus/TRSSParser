@@ -145,6 +145,7 @@ function GetFeedFileName(s: string): string;
 var
   c: char;
   i, k: Integer;
+  tstr: string;
 begin
   k := 0;
   SetLength(Result, Length(s));
@@ -158,7 +159,8 @@ begin
     end;
   end;
   SetLength(Result, k);
-  result:=lowercase('\'+result+TimeToStr(Now)+'.rss');
+  tstr:=TimeToStr(Now);
+  result:=lowercase('\'+result+ReplaceStr(tstr,':','_')+'.rss');
 end;
 
 end.
