@@ -150,7 +150,7 @@ begin
     end;
   end;
   SetLength(Result, k);
-  result:=lowercase(result+'.rss');
+  result:=lowercase('\'+result+'.rss');
 end;
 
 end.

@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 442
+  Left = 432
   Height = 455
   Top = 311
   Width = 706
@@ -8,7 +8,7 @@ object Form1: TForm1
   ClientWidth = 706
   Menu = MainMenu1
   OnCreate = FormCreate
-  LCLVersion = '0.9.30.4'
+  LCLVersion = '1.0.2.0'
   object GroupBox1: TGroupBox
     Left = 0
     Height = 432
@@ -23,7 +23,7 @@ object Form1: TForm1
       Height = 376
       Top = 0
       Width = 169
-      DefaultItemHeight = 17
+      DefaultItemHeight = 18
       ReadOnly = True
       TabOrder = 0
       OnClick = TreeView1Click
@@ -79,6 +79,7 @@ object Form1: TForm1
         item
           Caption = 'pubdate'
         end>
+      PopupMenu = PopupMenu1
       ReadOnly = True
       TabOrder = 0
       ViewStyle = vsReport
@@ -92,6 +93,14 @@ object Form1: TForm1
       object MenuItem2: TMenuItem
         Caption = 'Exit'
       end
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    left = 391
+    top = 235
+    object MenuItem3: TMenuItem
+      Caption = 'Save'
+      OnClick = MenuItem3Click
     end
   end
 end

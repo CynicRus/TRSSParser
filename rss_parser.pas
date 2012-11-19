@@ -5,7 +5,7 @@ unit rss_parser;
 interface
 
 uses
-  Classes, SysUtils,Variants, DateUtils,HTTPDefs, XMLRead,XMLWrite,Dom, rss_types,rss_utils;
+  Classes, SysUtils,Variants,FileUtil, DateUtils,HTTPDefs, XMLRead,XMLWrite,Dom, rss_types,rss_utils;
 
 type
 
@@ -125,7 +125,7 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
                oRSSItem.Title := GetNodeValue(oNode,'title');
                oRSSItem.Link  := GetNodeValue(oNode,'link');
                oRSSItem.Description   := GetNodeValue(oNode,'description');
-               oRSSItem.PubDate   := DateToStr(ParseRssDate(GetNodeValue(oNode,'pubDate')));
+               oRSSItem.PubDate   := ParseRssDate(GetNodeValue(oNode,'pubDate'));
                oRSSItem.Author := GetNodeValue(oNode,'author');
                oRSSItem.Category := GetNodeValue(oNode,'category');
                oRssItem.Guid := GetNodeValue(oNode,'guid');
@@ -173,20 +173,139 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
   procedure SaveChannel(Channel: TRSSChannel;aFilePath: string);
    var
      oXmlDocument: TXmlDocument;
+     oRSS: TRSSItem;
       i: integer;
-      vRoot,vFeed,vItem: TDomNode;
+      vRoot,vFeed,vChannel,vRSSItem,vItem,vValue: TDomNode;
+      RSSChannels: TDOMNodeList;
     begin
+
       oXmlDocument:=TXMLDocument.Create;
       vRoot:=oXmlDocument.CreateElement('rss');
       TDOMElement(vRoot).SetAttribute('version', '2.0');
       vFeed:=oXmlDocument.CreateElement('channel');
-
-
-
+      if not eq(Channel.Title,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('title');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Title));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+      if not eq(Channel.Link,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('link');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Link));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+      if not eq(Channel.Description,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('description');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Description));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+       if not eq(Channel.Category,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('category');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Category));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+       if not eq(Channel.Language,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('language');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Language));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+       if not eq(Channel.Docs,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('docs');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Docs));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+       if not eq(Channel.Copyright,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('copyright');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Copyright));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+       if not eq(Channel.Webmaster,'') then
+         begin
+           vChannel:=oXmlDocument.CreateElement('webmaster');
+           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Webmaster));
+           vChannel.AppendChild(vValue);
+           vFeed.AppendChild(vChannel);
+         end;
+        vChannel:=oXmlDocument.CreateElement('lastBuildDate');
+        vValue:=oXmlDocument.CreateTextNode(DateTimeToGMT(Now));
+        vChannel.AppendChild(vValue);
+        vFeed.AppendChild(vChannel);
+       for i:=0 to Channel.RSSList.Count-1 do
+         begin
+          oRSS:=Channel.RSSList[i];
+           vRSSItem:=oXmlDocument.CreateElement('item');
+           if not eq(oRSS.Title,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('title');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Title);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+           if not eq(oRSS.Link,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('link');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Link);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+           if not eq(oRSS.Description,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('description');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Description);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+           if not eq(oRSS.Category,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('category');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Category);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+           if not eq(oRSS.Author,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('author');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Author);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+           if not eq(oRSS.Guid,'') then
+             begin
+               vItem:=oXmlDocument.CreateElement('guid');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Guid);
+               vItem.AppendChild(vValue);
+               vRSSItem.AppendChild(vItem);
+             end;
+             vItem:=oXmlDocument.CreateElement('pubDate');
+             vValue:=oXmlDocument.CreateTextNode(DateTimeToGMT(now));
+             vItem.AppendChild(vValue);
+             vRSSItem.AppendChild(vItem);
+           vFeed.AppendChild(vRSSItem);
+         end;
+        vRoot.AppendChild(vFeed);
+        oXmlDocument.AppendChild(vRoot);
+        writeXMLFile(oXMLDocument,aPath+GetFeedFileName(Channel.Title+DateTimeToStr(now)));
       end;
-
+var
+   i: integer;
 begin
-
+   for i:=0 to Count -1 do
+     begin
+       SaveChannel(Items[i],aPath);
+     end;
 end;
 
 

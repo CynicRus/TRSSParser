@@ -21,10 +21,13 @@ type
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    PopupMenu1: TPopupMenu;
     TreeView1: TTreeView;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
   private
     { private declarations }
@@ -48,6 +51,13 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   RSS:=TRSSParser.Create;
+end;
+
+procedure TForm1.MenuItem3Click(Sender: TObject);
+begin
+ if not assigned(RSS) then exit;
+ if not (RSS.Count>0) then exit;
+  Rss.SaveRSSChannels('D:\Coding\LazRss\TestRSS');
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -94,7 +104,7 @@ begin
     oListItem.Caption:=aChannel.RSSList[i].Title;
     oListItem.SubItems.Add(aChannel.RSSList[i].Link);
     oListItem.SubItems.Add(aChannel.RSSList[i].Description);
-    oListItem.SubItems.Add(aChannel.RSSList[i].PubDate);
+    oListItem.SubItems.Add(DateToStr(aChannel.RSSList[i].PubDate));
   end;
 end;
 

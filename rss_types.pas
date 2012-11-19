@@ -13,7 +13,7 @@ type
 
  TRSSItem = class(TCollectionItem)
   public
-    PubDate: string;
+    PubDate: TDateTime;
     Link: string;
     Title: string;
     Description: string;
