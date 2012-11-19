@@ -9,19 +9,31 @@ uses
 
 type
 
+ { TRSSImage }
+
+ TRSSImage = class
+ public
+    Link: string;
+    Title: string;
+    Url: string;
+    constructor Create();
+    destructor Destroy;
+ end;
+
 { TRSSItem }
 
  TRSSItem = class(TCollectionItem)
   public
     PubDate: TDateTime;
-    Link: string;
-    Title: string;
-    Description: string;
-    Category: string;
-    Guid: string;
+    Link: String;
+    Title: String;
+    Description: String;
+    Category: String;
+    Guid: String;
     IsPermaLink: Boolean;
-    Comments: string;
-    Author: string;
+    Comments: String;
+    Author: String;
+    Image: TRssImage;
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
     end;
@@ -42,15 +54,16 @@ type
 
   TRSSChannel = class(TCollectionItem)
     public
-    Description: string;
-    Title: string;
-    Link: string;
-    Category: string;
-    Copyright: string;
-    Docs: string;
-    Language: string;
-    LastBuildDate: string;
-    Webmaster: string;
+    Description: String;
+    Title:String;
+    Link: String;
+    Category: String;
+    Copyright: String;
+    Docs: String;
+    Language: String;
+    LastBuildDate: String;
+    Webmaster: String;
+    Image: TRSSImage;
     RSSList: TRSSItemList;
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
@@ -71,6 +84,18 @@ type
 
 
 implementation
+
+{ TRSSImage }
+
+constructor TRSSImage.Create;
+begin
+
+end;
+
+destructor TRSSImage.Destroy;
+begin
+
+end;
 
 { TRSSStorage }
 

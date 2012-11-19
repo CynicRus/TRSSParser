@@ -59,7 +59,6 @@ end;
 
 function TRSSParser.ParseRSSDate(DateStr: string): TDateTime;
 var
-  df: TFormatSettings;
   s: string;
   Day, Month, Year, Hour, Minute, Second: Integer;
 begin
@@ -112,6 +111,7 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
            var
              oRSSItem: TRSSItem;
              oNode: TDOMNode;
+             imgNode: TDomNode;
              RSSItems: TDOMNodeList;
              i: integer;
            begin
@@ -130,6 +130,14 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
                oRSSItem.Category := GetNodeValue(oNode,'category');
                oRssItem.Guid := GetNodeValue(oNode,'guid');
                oRSSItem.Comments:= GetNodeValue(oNode,'comments');
+               imgNode:=oNode.FindNode(DOMString('image'));
+               if Assigned(imgNode) then
+                  begin
+                    oRSSItem.Image:=TRSSImage.Create();
+                    oRSSItem.Image.Title:=GetNodeValue(oNode,'title');
+                    oRSSItem.Image.Url:=GetNodeValue(oNode,'url');
+                    oRSSItem.Image.link:=GetNodeValue(oNode,'link');
+                  end;
                end;
             end;
            end;
@@ -137,17 +145,26 @@ procedure TRSSParser.ParseRSSChannel(const RSSData: string);
            procedure DoLoadChannels(aNode: TDOMNode);
            var
              oNode: TDOMNode;
+             imgNode: TDomNode;
              oRSSChannel: TRSSChannel;
            begin
                oRSSChannel:=AddItem;
                oNode:=aNode;
                oRSSChannel.Title:=GetNodeValue(oNode,'title');
-                oRSSChannel.Link:=GetNodeValue(oNode,'link');
+               oRSSChannel.Link:=GetNodeValue(oNode,'link');
                oRSSChannel.Description:=GetNodeValue(oNode,'description');
                oRSSChannel.Category:=GetNodeValue(oNode,'category');
                oRSSChannel.Copyright:=GetNodeValue(oNode,'copyright');
                oRSSChannel.LastBuildDate:=GetNodeValue(oNode,'lastBuildDate');
-               oRSSChannel.Language:=GetNodeValue(oNode,'language'); ;
+               oRSSChannel.Language:=GetNodeValue(oNode,'language');
+               imgNode:=oNode.FindNode(DOMString('image'));
+                if Assigned(imgNode) then
+                  begin
+                    oRSSChannel.Image:=TRSSImage.Create();
+                    oRSSChannel.Image.Title:=GetNodeValue(oNode,'title');
+                    oRSSChannel.Image.Url:=GetNodeValue(oNode,'url');
+                    oRSSChannel.Image.link:=GetNodeValue(oNode,'link');
+                  end;
                DoLoadItems(oNode, oRSSChannel);
            end;
          var
@@ -175,8 +192,7 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
      oXmlDocument: TXmlDocument;
      oRSS: TRSSItem;
       i: integer;
-      vRoot,vFeed,vChannel,vRSSItem,vItem,vValue: TDomNode;
-      RSSChannels: TDOMNodeList;
+      vRoot,vFeed,vChannel,vRSSItem,vItem,vValue,vImage: TDomNode;
     begin
 
       oXmlDocument:=TXMLDocument.Create;
@@ -203,6 +219,23 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
            vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Description));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
+         end;
+      if Assigned(Channel.Image) then
+         begin
+           vImage:=oXmlDocument.CreateElement('image');
+            vChannel:=oXmlDocument.CreateElement('url');
+            vValue:=oXmlDocument.CreateTextNode(Channel.Image.Url);
+            vChannel.AppendChild(vValue);
+            vImage.AppendChild(vChannel);
+            vChannel:=oXmlDocument.CreateElement('title');
+            vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Image.Title));
+            vChannel.AppendChild(vValue);
+            vImage.AppendChild(vChannel);
+            vChannel:=oXmlDocument.CreateElement('link');
+            vValue:=oXmlDocument.CreateTextNode(Channel.Image.Link);
+            vChannel.AppendChild(vValue);
+            vImage.AppendChild(vChannel);
+            vFeed.AppendChild(vImage);
          end;
        if not eq(Channel.Category,'') then
          begin
@@ -261,6 +294,23 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
                vItem.AppendChild(vValue);
                vRSSItem.AppendChild(vItem);
              end;
+           if Assigned(oRSS.Image) then
+             begin
+               vImage:=oXmlDocument.CreateElement('image');
+               vItem:=oXmlDocument.CreateElement('url');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Image.Url);
+               vItem.AppendChild(vValue);
+               vImage.AppendChild(vItem);
+               vItem:=oXmlDocument.CreateElement('title');
+               vValue:=oXmlDocument.CreateTextNode(NormalizeString(oRSS.Image.Title));
+               vItem.AppendChild(vValue);
+               vImage.AppendChild(vItem);
+               vItem:=oXmlDocument.CreateElement('link');
+               vValue:=oXmlDocument.CreateTextNode(oRSS.Image.Link);
+               vItem.AppendChild(vValue);
+               vImage.AppendChild(vItem);
+               vRSSItem.AppendChild(vImage);
+              end;
            if not eq(oRSS.Description,'') then
              begin
                vItem:=oXmlDocument.CreateElement('description');
@@ -297,7 +347,7 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
          end;
         vRoot.AppendChild(vFeed);
         oXmlDocument.AppendChild(vRoot);
-        writeXMLFile(oXMLDocument,aPath+GetFeedFileName(TimeToStr(now)));
+        writeXMLFile(oXMLDocument,aFilePath+GetFeedFileName(Channel.Title));
       end;
 var
    i: integer;
