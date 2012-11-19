@@ -5,7 +5,10 @@ unit rss_utils;
 interface
 
 uses
-  Classes, SysUtils, HttpSend;
+  Classes, SysUtils,DateUtils, HttpSend;
+
+function NormalizeString( S:string): string;
+
 function Eq(aValue1, aValue2: string): boolean;
 
 function GetFile(URL: String): string;
@@ -17,6 +20,11 @@ function convert(s:string): string;
 function GetFeedFileName(s: string): string;
 
 implementation
+
+function NormalizeString( S:string): string;
+begin
+  result:=UTF8Decode(S);
+end;
 
 function Eq(aValue1, aValue2: string): boolean;
 //--------------------------------------------------------
@@ -150,7 +158,7 @@ begin
     end;
   end;
   SetLength(Result, k);
-  result:=lowercase('\'+result+'.rss');
+  result:=lowercase('\'+result+TimeToStr(Now)+'.rss');
 end;
 
 end.

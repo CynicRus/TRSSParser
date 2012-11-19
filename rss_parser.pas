@@ -186,56 +186,56 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
       if not eq(Channel.Title,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('title');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Title));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Title));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
       if not eq(Channel.Link,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('link');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Link));
+           vValue:=oXmlDocument.CreateTextNode(Channel.Link);
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
       if not eq(Channel.Description,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('description');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Description));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Description));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
        if not eq(Channel.Category,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('category');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Category));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Category));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
        if not eq(Channel.Language,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('language');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Language));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Language));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
        if not eq(Channel.Docs,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('docs');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Docs));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Docs));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
        if not eq(Channel.Copyright,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('copyright');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Copyright));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Copyright));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
        if not eq(Channel.Webmaster,'') then
          begin
            vChannel:=oXmlDocument.CreateElement('webmaster');
-           vValue:=oXmlDocument.CreateTextNode(SysToUTF8(Channel.Webmaster));
+           vValue:=oXmlDocument.CreateTextNode(NormalizeString(Channel.Webmaster));
            vChannel.AppendChild(vValue);
            vFeed.AppendChild(vChannel);
          end;
@@ -250,7 +250,7 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
            if not eq(oRSS.Title,'') then
              begin
                vItem:=oXmlDocument.CreateElement('title');
-               vValue:=oXmlDocument.CreateTextNode(oRSS.Title);
+               vValue:=oXmlDocument.CreateTextNode(NormalizeString(oRSS.Title));
                vItem.AppendChild(vValue);
                vRSSItem.AppendChild(vItem);
              end;
@@ -264,21 +264,21 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
            if not eq(oRSS.Description,'') then
              begin
                vItem:=oXmlDocument.CreateElement('description');
-               vValue:=oXmlDocument.CreateTextNode(oRSS.Description);
+               vValue:=oXmlDocument.CreateTextNode(NormalizeString(oRSS.Description));
                vItem.AppendChild(vValue);
                vRSSItem.AppendChild(vItem);
              end;
            if not eq(oRSS.Category,'') then
              begin
                vItem:=oXmlDocument.CreateElement('category');
-               vValue:=oXmlDocument.CreateTextNode(oRSS.Category);
+               vValue:=oXmlDocument.CreateTextNode(NormalizeString(oRSS.Category));
                vItem.AppendChild(vValue);
                vRSSItem.AppendChild(vItem);
              end;
            if not eq(oRSS.Author,'') then
              begin
                vItem:=oXmlDocument.CreateElement('author');
-               vValue:=oXmlDocument.CreateTextNode(oRSS.Author);
+               vValue:=oXmlDocument.CreateTextNode(NormalizeString(oRSS.Author));
                vItem.AppendChild(vValue);
                vRSSItem.AppendChild(vItem);
              end;
@@ -297,7 +297,7 @@ procedure TRSSParser.SaveRSSChannels(const aPath: string);
          end;
         vRoot.AppendChild(vFeed);
         oXmlDocument.AppendChild(vRoot);
-        writeXMLFile(oXMLDocument,aPath+GetFeedFileName(Channel.Title+DateTimeToStr(now)));
+        writeXMLFile(oXMLDocument,aPath+GetFeedFileName(TimeToStr(now)));
       end;
 var
    i: integer;
